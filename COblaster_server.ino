@@ -39,9 +39,9 @@ void setup() {
 }
  
 void loop() {
-  server.handleClient();    
-  ///// delay(2000);
-  client_status();
+  ///// server.handleClient();    /// cette fonction consomme ~ 200ms
+   ///// delay(2000);
+   //// client_status();  /// cette fonction consomme ~ 250ms
   ///// delay(2000);
 
   Serial.println("envoi UDP");
@@ -50,7 +50,7 @@ void loop() {
   Udp.write(ReplyBuffer); // envoi du buffer
   Udp.endPacket();
   // Serial.println("fin envoi UDP");
-  delay(300);
+  delay(50); // 35-40 commence à bugger (très beau), 50 ok
 }
 
 void client_status()  /// This works, ty sohialsadiq!
