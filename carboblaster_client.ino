@@ -19,9 +19,20 @@ char packetBuffer[255]; //buffer to hold incoming packet
 /// char  ReplyBuffer[50] = "42";       // a string to send back
 
 const int relayPin = D1;
-const long interval = 150;  // pause pour le relai
+const long interval = 30;  // 12-20ms commence à bugger (très beau) pause pour le relai 30 ms fonctionne
 
 WiFiUDP Udp;
+
+void printWiFiStatus() {
+
+  Serial.println("");
+  Serial.print("Connecté à: ");
+  Serial.println(ssid);
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
+}
+
+
 
 void setup() {
     pinMode(relayPin, OUTPUT);
@@ -77,15 +88,6 @@ void loop() {
     // Udp.write(ReplyBuffer); // envoi du buffer
     // Udp.endPacket();
   }
-}
-
-void printWiFiStatus() {
-
-  Serial.println("");
-  Serial.print("Connecté à: ");
-  Serial.println(ssid);
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
 }
 
 
