@@ -14,12 +14,14 @@
 
 const char* ssid = "COblaster";
 unsigned int localPort = 2390;      // local port to listen on
+int attenteIP = 4000; // délai d'attente pour obtenir une adresse 
 
-char packetBuffer[255]; //buffer to hold incoming packet
-/// char  ReplyBuffer[50] = "42";       // a string to send back
+char packetBuffer[1]; //buffer to hold incoming packet
+//bool packetBuffer; //buffer to hold incoming packet
+
 
 const int relayPin = D1;
-const long interval = 30;  // 12-20ms commence à bugger (très beau) pause pour le relai 30 ms fonctionne
+// const long interval = 30;  // 12-20ms commence à bugger (très beau) pause pour le relai 30 ms fonctionne
 
 WiFiUDP Udp;
 
@@ -35,9 +37,9 @@ void printWiFiStatus() {
 
 
 void setup() {
-    pinMode(relayPin, OUTPUT);
+  pinMode(relayPin, OUTPUT);
   Serial.begin(115200);
-   WiFi.begin(ssid); // pas besoin de mot de passe
+  WiFi.begin(ssid); // pas besoin de mot de passe
   
   // if you get a connection, report back via serial:
   Udp.begin(localPort);
@@ -49,8 +51,9 @@ void loop() {
   if (WiFi.status() != WL_CONNECTED) {
 
     while (WiFi.status() != WL_CONNECTED) {
-      delay(2000);
       Serial.println("on réessaie de se connecter");
+      digitalWrite(relayPin, LOW);  // turn off relay with voltage LOW
+      delay(attenteIP);
     }
   
     // Print the new IP to Serial.
@@ -70,25 +73,19 @@ void loop() {
     Serial.println(Udp.remotePort());
 
     // read the packet into packetBufffer
-    int len = Udp.read(packetBuffer, 255);
+    int len = Udp.read(packetBuffer, 1);
     if (len > 0) packetBuffer[len] = 0;
-    Serial.println("Contents:");
-    Serial.println(packetBuffer);
-    
-    digitalWrite(relayPin, HIGH); // turn on relay with voltage HIGH
-    delay(interval);              // pause
-    digitalWrite(relayPin, LOW);  // turn off relay with voltage LOW
-    delay(interval);              // pause
+    String data = String(packetBuffer);
+    Serial.println(data);
 
-    //////send a reply, to the IP address and port that sent us the packet we received
-    // Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
-    // Serial.println("merci!");
-    // COS = 42;
-    // COS.toCharArray(ReplyBuffer, 50); // conversion à un buffer
-    // Udp.write(ReplyBuffer); // envoi du buffer
-    // Udp.endPacket();
+    if (data=="1"){
+      digitalWrite(relayPin, HIGH); // turn on relay with voltage HIGH 
+      }
+     
+    else {
+     digitalWrite(relayPin, LOW);  // turn off relay with voltage LOW
+      }
+    
   }
 }
-
-
 
